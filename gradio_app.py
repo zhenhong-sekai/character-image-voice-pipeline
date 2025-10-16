@@ -671,6 +671,9 @@ def transcribe_video_file(video_file, target_speaker_description, progress=gr.Pr
         # Create audio players HTML
         audio_players_html = create_audio_players_html(audio_segments_path, target_segments)
         
+        # Get individual audio files for playback
+        individual_audio_files = get_individual_audio_files(audio_segments_path)
+        
         return (audio_segments_info, full_transcript, formatted_segments, target_text.strip(), 
                 transcript_path, target_segments, identified_speaker, audio_segments_path, audio_segment_files, audio_players_html)
         
@@ -712,6 +715,40 @@ def get_audio_segments_files(audio_segments_path):
             segment_files.append(file_path)
     
     return segment_files if segment_files else None
+
+def get_individual_audio_files(audio_segments_path):
+    """Get individual audio files for playback"""
+    if not audio_segments_path or not os.path.exists(audio_segments_path):
+        return []
+    
+    segment_files = []
+    for file in sorted(os.listdir(audio_segments_path)):
+        if file.endswith('.mp4'):
+            file_path = os.path.join(audio_segments_path, file)
+            segment_files.append(file_path)
+    
+    return segment_files
+
+def populate_audio_players(audio_segments_path):
+    """Populate individual audio players with audio files"""
+    if not audio_segments_path or not os.path.exists(audio_segments_path):
+        return [gr.Audio(visible=False)] * 5
+    
+    segment_files = []
+    for file in sorted(os.listdir(audio_segments_path)):
+        if file.endswith('.mp4'):
+            file_path = os.path.join(audio_segments_path, file)
+            segment_files.append(file_path)
+    
+    # Create audio components for up to 5 segments
+    audio_components = []
+    for i in range(5):
+        if i < len(segment_files):
+            audio_components.append(gr.Audio(value=segment_files[i], visible=True, label=f"Audio Segment {i+1}"))
+        else:
+            audio_components.append(gr.Audio(visible=False))
+    
+    return audio_components
 
 def create_audio_players_info(audio_segments_path, target_segments):
     """Create info text for audio segments"""
@@ -759,7 +796,8 @@ def create_audio_players_html(audio_segments_path, target_segments):
     
     html_content = """
     <div style="margin: 20px 0;">
-        <h3>🎧 Play Audio Segments</h3>
+        <h3>🎧 Audio Segments Available</h3>
+        <p><strong>Note:</strong> Audio files are available for download below. Use the download section to get the audio segments.</p>
     """
     
     for i, file in enumerate(segment_files):
@@ -780,14 +818,12 @@ def create_audio_players_html(audio_segments_path, target_segments):
             <h4>Segment {i+1}: {file}</h4>
             {segment_info}
             <br><br>
-            <audio controls style="width: 100%;">
-                <source src="file/{file_path}" type="audio/mpeg">
-                Your browser does not support the audio element.
-            </audio>
-            <br><br>
-            <a href="file/{file_path}" download="{file}" style="background: #007bff; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px;">
-                📥 Download ({file_size:.1f} MB)
-            </a>
+            <div style="background: #f0f0f0; padding: 10px; border-radius: 4px; text-align: center;">
+                <p><strong>🎵 Audio Segment {i+1}</strong></p>
+                <p>File: {file}</p>
+                <p>Size: {file_size:.1f} MB</p>
+                <p><em>Use the download section below to get the audio files</em></p>
+            </div>
         </div>
         """
     
@@ -941,10 +977,14 @@ def create_interface():
                                         )
                                         
                                         # Individual audio players
-                                        audio_players_upload = gr.HTML(
-                                            label="Audio Players",
-                                            value="Audio players will appear here after extraction..."
-                                        )
+                                        audio_players_upload = gr.Column()
+                                        
+                                        # Individual audio components (will be populated dynamically)
+                                        audio_player_1_upload = gr.Audio(visible=False)
+                                        audio_player_2_upload = gr.Audio(visible=False)
+                                        audio_player_3_upload = gr.Audio(visible=False)
+                                        audio_player_4_upload = gr.Audio(visible=False)
+                                        audio_player_5_upload = gr.Audio(visible=False)
                                         
                                         # Download section
                                         audio_segments_upload = gr.File(
@@ -1001,6 +1041,33 @@ def create_interface():
                             inputs=[audio_segments_path_upload],
                             outputs=[audio_segments_upload]
                         )
+                        
+                        # Update individual audio players when path changes
+                        def update_individual_audio_players(audio_segments_path):
+                            if not audio_segments_path or not os.path.exists(audio_segments_path):
+                                return [gr.Audio(visible=False)] * 5
+                            
+                            segment_files = []
+                            for file in sorted(os.listdir(audio_segments_path)):
+                                if file.endswith('.mp4'):
+                                    file_path = os.path.join(audio_segments_path, file)
+                                    segment_files.append(file_path)
+                            
+                            # Return up to 5 audio components
+                            audio_components = []
+                            for i in range(5):
+                                if i < len(segment_files):
+                                    audio_components.append(gr.Audio(value=segment_files[i], visible=True, label=f"Audio Segment {i+1}"))
+                                else:
+                                    audio_components.append(gr.Audio(visible=False))
+                            
+                            return audio_components
+                        
+                        audio_segments_path_upload.change(
+                            update_individual_audio_players,
+                            inputs=[audio_segments_path_upload],
+                            outputs=[audio_player_1_upload, audio_player_2_upload, audio_player_3_upload, audio_player_4_upload, audio_player_5_upload]
+                        )
                     
                     with gr.Tab("🔍 Search & Transcribe"):
                         gr.Markdown("#### 🔍 Search for videos and transcribe them")
@@ -1036,10 +1103,14 @@ def create_interface():
                                         )
                                         
                                         # Individual audio players
-                                        audio_players_search = gr.HTML(
-                                            label="Audio Players",
-                                            value="Audio players will appear here after extraction..."
-                                        )
+                                        audio_players_search = gr.Column()
+                                        
+                                        # Individual audio components (will be populated dynamically)
+                                        audio_player_1_search = gr.Audio(visible=False)
+                                        audio_player_2_search = gr.Audio(visible=False)
+                                        audio_player_3_search = gr.Audio(visible=False)
+                                        audio_player_4_search = gr.Audio(visible=False)
+                                        audio_player_5_search = gr.Audio(visible=False)
                                         
                                         # Download section
                                         audio_segments_search = gr.File(
@@ -1095,6 +1166,33 @@ def create_interface():
                             update_audio_segments_search,
                             inputs=[audio_segments_path_search],
                             outputs=[audio_segments_search]
+                        )
+                        
+                        # Update individual audio players when path changes
+                        def update_individual_audio_players_search(audio_segments_path):
+                            if not audio_segments_path or not os.path.exists(audio_segments_path):
+                                return [gr.Audio(visible=False)] * 5
+                            
+                            segment_files = []
+                            for file in sorted(os.listdir(audio_segments_path)):
+                                if file.endswith('.mp4'):
+                                    file_path = os.path.join(audio_segments_path, file)
+                                    segment_files.append(file_path)
+                            
+                            # Return up to 5 audio components
+                            audio_components = []
+                            for i in range(5):
+                                if i < len(segment_files):
+                                    audio_components.append(gr.Audio(value=segment_files[i], visible=True, label=f"Audio Segment {i+1}"))
+                                else:
+                                    audio_components.append(gr.Audio(visible=False))
+                            
+                            return audio_components
+                        
+                        audio_segments_path_search.change(
+                            update_individual_audio_players_search,
+                            inputs=[audio_segments_path_search],
+                            outputs=[audio_player_1_search, audio_player_2_search, audio_player_3_search, audio_player_4_search, audio_player_5_search]
                         )
             
             with gr.Tab("📊 API Status"):
