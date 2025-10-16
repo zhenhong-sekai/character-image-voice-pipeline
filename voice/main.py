@@ -136,7 +136,7 @@ class TargetSpeakerIdentifier:
     def __init__(self):
         """Initialize the LLM client for speaker identification."""
         self.client = OpenAI(
-            api_key="sk-W6dDBqt8EzXYNbfrJWm3uQ1DVqR1J4EZYYoz6LpUAvpOcy9R",
+            api_key=os.getenv("OPENAI_API_KEY", "your_openai_api_key_here"),
             base_url="https://yunwu.ai/v1",
         )
     

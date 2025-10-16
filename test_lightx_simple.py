@@ -13,7 +13,7 @@ def test_lightx_outpainting():
     """Simple test of LightX outpainting API"""
     
     # Replace with your actual API key
-    API_KEY = "c87fbbdea28849dabbba313479687776_0f5f7a6790b64b6997dd4770d2e7b685_andoraitools"
+    API_KEY = os.getenv("LIGHTX_API_KEY", "your_lightx_api_key_here")
     
     # Test image (use any image from downloaded_images folder)
     test_image = "downloaded_images/donald3.jpg"

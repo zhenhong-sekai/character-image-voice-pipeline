@@ -10,8 +10,8 @@ from urllib.parse import quote
 import json
 
 # Google Custom Search API Configuration
-GOOGLE_API_KEY = "AIzaSyBdXRfCxg04ukpG62qkP7GHYNxtnALljok"  # Your Google API key
-GOOGLE_SEARCH_ENGINE_ID = "b0892825015e645e6"  # Your Search Engine ID (sekai_test)
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY", "your_google_api_key_here")
+GOOGLE_SEARCH_ENGINE_ID = os.getenv("GOOGLE_SEARCH_ENGINE_ID", "your_search_engine_id_here")
 
 def search_google_images(query, num_results=10, img_size="large", img_type="photo"):
     """

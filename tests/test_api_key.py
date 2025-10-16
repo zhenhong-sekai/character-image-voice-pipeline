@@ -3,11 +3,12 @@
 Test LightX API Key with different endpoints
 """
 
+import os
 import requests
 import json
 
 def test_api_key():
-    API_KEY = "c87fbbdea28849dabbba313479687776_4bafb2c2689a4569af75e210a8334ace_andoraitools"
+    API_KEY = os.getenv("LIGHTX_API_KEY", "your_lightx_api_key_here")
     
     headers = {
         "Content-Type": "application/json",
