@@ -1040,6 +1040,7 @@ def create_interface():
                                 return segment_files
                             return None
                         
+                        # Update download buttons when path changes
                         audio_segments_path_upload.change(
                             update_audio_segments_upload,
                             inputs=[audio_segments_path_upload],
@@ -1166,6 +1167,7 @@ def create_interface():
                                 return segment_files
                             return None
                         
+                        # Update download buttons when path changes
                         audio_segments_path_search.change(
                             update_audio_segments_search,
                             inputs=[audio_segments_path_search],
