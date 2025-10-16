@@ -7,7 +7,7 @@ from character_image_pipeline import process_character_pipeline
 
 def main():
     # Search for images and process them through the full pipeline
-    character_name = "donald trump"  # Change this to any character you want
+    character_name = "charlie kirk"  # Change this to any character you want
     
     print(f"🎭 Running Character Image Pipeline with Google Search")
     print(f"Character: {character_name}")

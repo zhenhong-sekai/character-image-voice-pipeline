@@ -16,7 +16,7 @@ def test_lightx_outpainting():
     API_KEY = "c87fbbdea28849dabbba313479687776_0f5f7a6790b64b6997dd4770d2e7b685_andoraitools"
     
     # Test image (use any image from downloaded_images folder)
-    test_image = "downloaded_images/donald4.jpg"
+    test_image = "downloaded_images/donald3.jpg"
     
     if not os.path.exists(test_image):
         print(f"❌ Test image not found: {test_image}")

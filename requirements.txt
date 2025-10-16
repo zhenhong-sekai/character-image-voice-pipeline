@@ -1,0 +1,27 @@
+# Core dependencies
+requests>=2.31.0
+websocket-client>=1.6.4
+
+# Image processing and computer vision
+opencv-python>=4.8.0
+Pillow>=10.0.0
+numpy>=1.24.0
+
+# Machine learning and object detection
+ultralytics>=8.0.0
+torch>=2.0.0
+torchvision>=0.15.0
+
+# Standard library modules (no installation needed)
+# - os
+# - json
+# - base64
+# - uuid
+# - logging
+# - time
+# - random
+# - datetime
+# - threading
+# - shutil
+# - pathlib
+# - urllib.parse
