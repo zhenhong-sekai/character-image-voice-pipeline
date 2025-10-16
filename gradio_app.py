@@ -665,11 +665,14 @@ def transcribe_video_file(video_file, target_speaker_description, progress=gr.Pr
         # Get audio segment files for download
         audio_segment_files = get_audio_segments_files(audio_segments_path)
         
+        # Create audio players HTML
+        audio_players_html = create_audio_players_html(audio_segments_path, target_segments)
+        
         return (audio_segments_info, full_transcript, formatted_segments, target_text.strip(), 
-                transcript_path, target_segments, identified_speaker, audio_segments_path, audio_segment_files)
+                transcript_path, target_segments, identified_speaker, audio_segments_path, audio_segment_files, audio_players_html)
         
     except Exception as e:
-        return f"❌ Transcription failed: {str(e)}", None, None, None, None, None, None, None, None
+        return f"❌ Transcription failed: {str(e)}", None, None, None, None, None, None, None, None, None
 
 def search_and_transcribe_video(character_name, max_videos, target_speaker_description, progress=gr.Progress()):
     """Search for videos using Google and transcribe them"""
@@ -692,7 +695,7 @@ def search_and_transcribe_video(character_name, max_videos, target_speaker_descr
         return transcribe_video_file(video_path, target_speaker_description, progress)
         
     except Exception as e:
-        return f"❌ Video search and transcription failed: {str(e)}", None, None, None, None, None, None, None, None
+        return f"❌ Video search and transcription failed: {str(e)}", None, None, None, None, None, None, None, None, None
 
 def get_audio_segments_files(audio_segments_path):
     """Get list of audio segment files for download"""
@@ -740,6 +743,53 @@ def create_audio_players_info(audio_segments_path, target_segments):
     
     info_text += "\n**📥 Download:** Use the download section below to get the audio files."
     return info_text
+
+def create_audio_players_html(audio_segments_path, target_segments):
+    """Create HTML with audio players for each segment"""
+    if not audio_segments_path or not os.path.exists(audio_segments_path):
+        return "No audio segments available"
+    
+    segment_files = sorted([f for f in os.listdir(audio_segments_path) if f.endswith('.mp4')])
+    
+    if not segment_files:
+        return "No audio segments found"
+    
+    html_content = """
+    <div style="margin: 20px 0;">
+        <h3>🎧 Play Audio Segments</h3>
+    """
+    
+    for i, file in enumerate(segment_files):
+        file_path = os.path.join(audio_segments_path, file)
+        file_size = os.path.getsize(file_path) / (1024 * 1024)  # MB
+        
+        # Get segment info
+        segment_info = ""
+        if i < len(target_segments):
+            segment = target_segments[i]
+            start_time = segment.get('start', 0)
+            end_time = segment.get('end', start_time + 1000)
+            duration = (end_time - start_time) / 1000
+            segment_info = f"<small>Time: {start_time/1000:.1f}s - {end_time/1000:.1f}s ({duration:.1f}s)</small>"
+        
+        html_content += f"""
+        <div style="margin: 15px 0; padding: 15px; border: 1px solid #ddd; border-radius: 8px; background: #f9f9f9;">
+            <h4>Segment {i+1}: {file}</h4>
+            {segment_info}
+            <br><br>
+            <audio controls style="width: 100%;">
+                <source src="file/{file_path}" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+            <br><br>
+            <a href="file/{file_path}" download="{file}" style="background: #007bff; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px;">
+                📥 Download ({file_size:.1f} MB)
+            </a>
+        </div>
+        """
+    
+    html_content += "</div>"
+    return html_content
 
 # Create the Gradio interface
 def create_interface():
@@ -887,8 +937,11 @@ def create_interface():
                                             value="Audio segments will appear here after extraction..."
                                         )
                                         
-                                        # Individual audio players (will be populated dynamically)
-                                        audio_players_upload = gr.Column(visible=False)
+                                        # Individual audio players
+                                        audio_players_upload = gr.HTML(
+                                            label="Audio Players",
+                                            value="Audio players will appear here after extraction..."
+                                        )
                                         
                                         # Download section
                                         audio_segments_upload = gr.File(
@@ -930,7 +983,7 @@ def create_interface():
                             inputs=[video_input, target_speaker_upload],
                             outputs=[audio_segments_info_upload, full_transcript_upload, target_segments_upload, 
                                     complete_text_upload, transcript_file_upload, target_segments_data_upload, 
-                                    identified_speaker_upload, audio_segments_path_upload]
+                                    identified_speaker_upload, audio_segments_path_upload, audio_segments_upload, audio_players_upload]
                         )
                         
                         # Update audio segments download when path changes
@@ -979,8 +1032,11 @@ def create_interface():
                                             value="Audio segments will appear here after extraction..."
                                         )
                                         
-                                        # Individual audio players (will be populated dynamically)
-                                        audio_players_search = gr.Column(visible=False)
+                                        # Individual audio players
+                                        audio_players_search = gr.HTML(
+                                            label="Audio Players",
+                                            value="Audio players will appear here after extraction..."
+                                        )
                                         
                                         # Download section
                                         audio_segments_search = gr.File(
@@ -1022,7 +1078,7 @@ def create_interface():
                             inputs=[character_name_voice, max_videos, target_speaker_search],
                             outputs=[audio_segments_info_search, full_transcript_search, target_segments_search, 
                                     complete_text_search, transcript_file_search, target_segments_data_search, 
-                                    identified_speaker_search, audio_segments_path_search]
+                                    identified_speaker_search, audio_segments_path_search, audio_segments_search, audio_players_search]
                         )
                         
                         # Update audio segments download when path changes
