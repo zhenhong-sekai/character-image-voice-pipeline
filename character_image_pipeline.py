@@ -17,7 +17,7 @@ import time
 import shutil
 from pathlib import Path
 from google_search_integration import search_and_download_images
-from comfyui_outpainting import comfyui_outpaint_image
+from scripts.comfyui_outpainting import comfyui_outpaint_image
 
 # --- CONFIG ---
 SEARCH_QUERY = ""  # Will be set dynamically
