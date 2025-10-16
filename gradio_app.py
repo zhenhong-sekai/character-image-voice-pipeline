@@ -9,6 +9,10 @@ import os
 # Disable pandas to prevent import errors
 os.environ["PANDAS_DISABLE"] = "True"
 os.environ["PANDAS_OPT_OUT"] = "True"
+os.environ["PANDAS_SKIP"] = "True"
+os.environ["PANDAS_IGNORE"] = "True"
+os.environ["PANDAS_NO"] = "True"
+os.environ["PANDAS_OFF"] = "True"
 os.environ["GRADIO_ANALYTICS_ENABLED"] = "False"
 os.environ["GRADIO_SERVER_NAME"] = "0.0.0.0"
 os.environ["GRADIO_TELEMETRY_ENABLED"] = "False"
@@ -1045,7 +1049,7 @@ def create_interface():
                         # Update individual audio players when path changes
                         def update_individual_audio_players(audio_segments_path):
                             if not audio_segments_path or not os.path.exists(audio_segments_path):
-                                return [gr.Audio(visible=False)] * 5
+                                return [None, None, None, None, None]
                             
                             segment_files = []
                             for file in sorted(os.listdir(audio_segments_path)):
@@ -1053,15 +1057,15 @@ def create_interface():
                                     file_path = os.path.join(audio_segments_path, file)
                                     segment_files.append(file_path)
                             
-                            # Return up to 5 audio components
-                            audio_components = []
+                            # Return up to 5 audio file paths
+                            audio_values = []
                             for i in range(5):
                                 if i < len(segment_files):
-                                    audio_components.append(gr.Audio(value=segment_files[i], visible=True, label=f"Audio Segment {i+1}"))
+                                    audio_values.append(segment_files[i])
                                 else:
-                                    audio_components.append(gr.Audio(visible=False))
+                                    audio_values.append(None)
                             
-                            return audio_components
+                            return audio_values
                         
                         audio_segments_path_upload.change(
                             update_individual_audio_players,
@@ -1171,7 +1175,7 @@ def create_interface():
                         # Update individual audio players when path changes
                         def update_individual_audio_players_search(audio_segments_path):
                             if not audio_segments_path or not os.path.exists(audio_segments_path):
-                                return [gr.Audio(visible=False)] * 5
+                                return [None, None, None, None, None]
                             
                             segment_files = []
                             for file in sorted(os.listdir(audio_segments_path)):
@@ -1179,15 +1183,15 @@ def create_interface():
                                     file_path = os.path.join(audio_segments_path, file)
                                     segment_files.append(file_path)
                             
-                            # Return up to 5 audio components
-                            audio_components = []
+                            # Return up to 5 audio file paths
+                            audio_values = []
                             for i in range(5):
                                 if i < len(segment_files):
-                                    audio_components.append(gr.Audio(value=segment_files[i], visible=True, label=f"Audio Segment {i+1}"))
+                                    audio_values.append(segment_files[i])
                                 else:
-                                    audio_components.append(gr.Audio(visible=False))
+                                    audio_values.append(None)
                             
-                            return audio_components
+                            return audio_values
                         
                         audio_segments_path_search.change(
                             update_individual_audio_players_search,
