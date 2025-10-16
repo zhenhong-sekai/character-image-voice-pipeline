@@ -22,7 +22,7 @@ character_image_voice_acquisition/
 ├── working.json                     # ComfyUI outpainting workflow
 ├── workflow.json                    # Simple ComfyUI workflow
 ├── flux-outpaint.json              # Flux outpainting workflow
-├── yolov8n.pt                       # YOLO model for face detection
+├── models/yolov8n.pt                # YOLO model for face detection
 ├── input.jpeg                       # Test input image
 ├── downloaded_images/               # Downloaded character images
 ├── character_sprites/               # Generated character sprites
@@ -135,7 +135,7 @@ python3 main.py
 
 - **ComfyUI Server** - Running on 18.189.25.28:8004
 - **Python Libraries** - requests, websocket, cv2, PIL, ultralytics
-- **YOLO Model** - yolov8n.pt for face detection
+- **YOLO Model** - models/yolov8n.pt for face detection
 - **ComfyUI Workflows** - working.json, workflow.json
 
 ## 📝 Notes

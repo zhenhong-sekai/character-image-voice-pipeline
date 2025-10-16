@@ -37,7 +37,7 @@ FACE_SIZE_RATIO_MAX = 0.25
 
 # --- LOAD YOLO ---
 print("Loading YOLO model...")
-yolo_model = YOLO("yolov8n.pt")
+yolo_model = YOLO("models/yolov8n.pt")
 
 def search_google_images(query, max_images=15):
     """Search for real images using web scraping"""
