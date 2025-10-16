@@ -1030,7 +1030,7 @@ def create_interface():
                             inputs=[video_input, target_speaker_upload],
                             outputs=[audio_segments_info_upload, full_transcript_upload, target_segments_upload, 
                                     complete_text_upload, transcript_file_upload, target_segments_data_upload, 
-                                    identified_speaker_upload, audio_segments_path_upload, audio_segments_upload, audio_players_upload]
+                                    identified_speaker_upload, audio_segments_path_upload, audio_segments_upload]
                         )
                         
                         # Update audio segments download when path changes
@@ -1156,7 +1156,7 @@ def create_interface():
                             inputs=[character_name_voice, max_videos, target_speaker_search],
                             outputs=[audio_segments_info_search, full_transcript_search, target_segments_search, 
                                     complete_text_search, transcript_file_search, target_segments_data_search, 
-                                    identified_speaker_search, audio_segments_path_search, audio_segments_search, audio_players_search]
+                                    identified_speaker_search, audio_segments_path_search, audio_segments_search]
                         )
                         
                         # Update audio segments download when path changes
