@@ -6,6 +6,9 @@ Real-time progress tracking with gr.Progress()
 
 import os
 # Disable Gradio analytics to avoid pandas dependency issues
+# Disable pandas to prevent import errors
+os.environ["PANDAS_DISABLE"] = "True"
+os.environ["PANDAS_OPT_OUT"] = "True"
 os.environ["GRADIO_ANALYTICS_ENABLED"] = "False"
 os.environ["GRADIO_SERVER_NAME"] = "0.0.0.0"
 os.environ["GRADIO_TELEMETRY_ENABLED"] = "False"
@@ -448,7 +451,7 @@ def download_results(results):
 def transcribe_video_file(video_file, target_speaker_description, progress=gr.Progress()):
     """Transcribe a video file and extract target speaker segments"""
     if video_file is None:
-        return "❌ Please upload a video file first", None, None, None
+        return ("❌ Please upload a video file first", None, None, None, None, None, None, None, None, None)
     
     try:
         progress(0.1, desc="🎬 Initializing transcription...")
@@ -470,7 +473,7 @@ def transcribe_video_file(video_file, target_speaker_description, progress=gr.Pr
         # Get utterances
         utterances = transcription_result.get('utterances', [])
         if not utterances:
-            return "❌ No speaker diarization data available", None, None, None
+            return ("❌ No speaker diarization data available", None, None, None, None, None, None, None, None, None)
         
         # Initialize speaker identifier
         speaker_identifier = TargetSpeakerIdentifier()
@@ -483,7 +486,7 @@ def transcribe_video_file(video_file, target_speaker_description, progress=gr.Pr
         )
         
         if identified_speaker == "UNKNOWN":
-            return "❌ Could not identify target speaker", None, None, None
+            return ("❌ Could not identify target speaker", None, None, None, None, None, None, None, None, None)
         
         progress(0.9, desc="📝 Extracting target speaker segments...")
         
@@ -493,7 +496,7 @@ def transcribe_video_file(video_file, target_speaker_description, progress=gr.Pr
         )
         
         if not target_segments:
-            return "❌ No segments found for the identified target speaker", None, None, None
+            return ("❌ No segments found for the identified target speaker", None, None, None, None, None, None, None, None, None)
         
         progress(1.0, desc="✅ Transcription completed!")
         
@@ -677,7 +680,7 @@ def transcribe_video_file(video_file, target_speaker_description, progress=gr.Pr
 def search_and_transcribe_video(character_name, max_videos, target_speaker_description, progress=gr.Progress()):
     """Search for videos using Google and transcribe them"""
     if not character_name:
-        return "❌ Please enter a character name for video search", None, None, None
+        return ("❌ Please enter a character name for video search", None, None, None, None, None, None, None, None, None)
     
     try:
         progress(0.1, desc="🔍 Searching for videos...")
@@ -687,7 +690,7 @@ def search_and_transcribe_video(character_name, max_videos, target_speaker_descr
         video_path = os.path.join("voice", "mp4_files", "videoplayback.mp4")
         
         if not os.path.exists(video_path):
-            return "❌ No video file found. Please upload a video first.", None, None, None
+            return ("❌ No video file found. Please upload a video first.", None, None, None, None, None, None, None, None, None)
         
         progress(0.2, desc="🎬 Processing video...")
         
